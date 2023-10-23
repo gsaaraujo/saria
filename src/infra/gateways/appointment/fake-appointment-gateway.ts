@@ -1,4 +1,4 @@
-import { AppointmentGateway, AppointmentGatewayDTO } from '@infra/gateways/appointment/appointment-gateway';
+import { AppointmentGateway, AppointmentGatewayDTO } from '@application/gateways/appointment-gateway';
 
 export class FakeAppointmentGateway implements AppointmentGateway {
   public appointments: AppointmentGatewayDTO[] = [];

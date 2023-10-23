@@ -2,23 +2,23 @@ import { Usecase } from '@shared/helpers/usecase';
 import { BaseError } from '@shared/helpers/base-error';
 import { Either, left, right } from '@shared/helpers/either';
 
-import { AppointmentNotFoundError } from '@domain/errors/appointment-not-found-error';
-
-import { QueueAdapter } from '@infra/adapters/queue/queue-adapter';
-import { AppointmentGateway } from '@infra/gateways/appointment/appointment-gateway';
-import { Payment } from '@domain/models/payment/payment';
 import { Money } from '@domain/models/money';
-import { PaymentApproved } from '@domain/models/events/appointment-paid';
+import { Payment } from '@domain/models/payment/payment';
+import { PaymentApproved } from '@domain/events/appointment-paid';
 
-export type PayAppointmentInput = {
+import { QueueAdapter } from '@application/adapters/queue-adapter';
+import { AppointmentGateway } from '@application/gateways/appointment-gateway';
+import { AppointmentNotFoundError } from '@application/errors/appointment-not-found-error';
+
+export type PayAppointmentServiceInput = {
   appointmentId: string;
   price: number;
   creditCardToken: string;
 };
 
-export type PayAppointmentOutput = void;
+export type PayAppointmentServiceOutput = void;
 
-export class PayAppointment extends Usecase<PayAppointmentInput, PayAppointmentOutput> {
+export class PayAppointmentService extends Usecase<PayAppointmentServiceInput, PayAppointmentServiceOutput> {
   public constructor(
     private readonly appointmentGateway: AppointmentGateway,
     private readonly queueAdapter: QueueAdapter,
@@ -26,7 +26,7 @@ export class PayAppointment extends Usecase<PayAppointmentInput, PayAppointmentO
     super();
   }
 
-  public async execute(input: PayAppointmentInput): Promise<Either<BaseError, void>> {
+  public async execute(input: PayAppointmentServiceInput): Promise<Either<BaseError, void>> {
     const appointmentExists: boolean = await this.appointmentGateway.exists(input.appointmentId);
 
     if (!appointmentExists) {
