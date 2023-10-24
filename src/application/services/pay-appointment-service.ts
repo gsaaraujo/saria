@@ -2,7 +2,6 @@ import { Usecase } from '@shared/helpers/usecase';
 import { BaseError } from '@shared/helpers/base-error';
 import { Either, left, right } from '@shared/helpers/either';
 
-import { Money } from '@domain/models/money';
 import { Payment } from '@domain/models/payment/payment';
 import { PaymentApproved } from '@domain/events/appointment-paid';
 
@@ -12,8 +11,7 @@ import { AppointmentNotFoundError } from '@application/errors/appointment-not-fo
 
 export type PayAppointmentServiceInput = {
   appointmentId: string;
-  price: number;
-  creditCardToken: string;
+  paymentTokenId: string;
 };
 
 export type PayAppointmentServiceOutput = void;
@@ -34,21 +32,9 @@ export class PayAppointmentService extends Usecase<PayAppointmentServiceInput, P
       return left(error);
     }
 
-    const moneyOrError: Either<BaseError, Money> = Money.create({
-      amount: input.price,
-    });
-
-    if (moneyOrError.isLeft()) {
-      const error: BaseError = moneyOrError.value;
-      return left(error);
-    }
-
-    const money: Money = moneyOrError.value;
-
     const paymentOrError: Either<BaseError, Payment> = Payment.create({
       appointmentId: input.appointmentId,
-      creditCardToken: input.creditCardToken,
-      price: money,
+      paymentTokenId: input.paymentTokenId,
     });
 
     if (paymentOrError.isLeft()) {

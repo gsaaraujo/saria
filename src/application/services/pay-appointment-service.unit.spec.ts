@@ -23,12 +23,11 @@ describe('pay-appointment', () => {
   it(`given the customer has booked an appointment
       when attempt to pay the appointment
       it should succeed`, async () => {
-    fakeAppointmentGateway.appointments = [{ id: 'b6bba160-562a-4aea-bbba-2f03bef5071a' }];
+    fakeAppointmentGateway.appointments = [{ id: 'b6bba160-562a-4aea-bbba-2f03bef5071a', patientId: 'any' }];
     fakeQueueAdapter.messages = [];
     const sut: Either<BaseError, void> = await payAppointment.execute({
       appointmentId: 'b6bba160-562a-4aea-bbba-2f03bef5071a',
-      creditCardToken: 'any',
-      price: 140,
+      paymentTokenId: 'any',
     });
 
     expect(sut.isRight()).toBeTruthy();
@@ -43,8 +42,7 @@ describe('pay-appointment', () => {
 
     const sut: Either<BaseError, void> = await payAppointment.execute({
       appointmentId: 'any',
-      creditCardToken: 'any',
-      price: 140,
+      paymentTokenId: 'any',
     });
 
     expect(sut.isLeft()).toBeTruthy();

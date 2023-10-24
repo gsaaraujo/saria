@@ -2,12 +2,9 @@ import { Entity } from '@shared/helpers/entity';
 import { Either, right } from '@shared/helpers/either';
 import { BaseError } from '@shared/helpers/base-error';
 
-import { Money } from '@domain/models/money';
-
 export type PaymentProps = {
   appointmentId: string;
-  price: Money;
-  creditCardToken: string;
+  paymentTokenId: string;
 };
 
 export class Payment extends Entity<PaymentProps> {
@@ -24,11 +21,7 @@ export class Payment extends Entity<PaymentProps> {
     return this._props.appointmentId;
   }
 
-  get price(): Money {
-    return this._props.price;
-  }
-
-  get creditCardToken(): string {
-    return this._props.creditCardToken;
+  get paymentTokenId(): string {
+    return this._props.paymentTokenId;
   }
 }

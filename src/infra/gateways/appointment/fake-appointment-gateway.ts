@@ -6,4 +6,19 @@ export class FakeAppointmentGateway implements AppointmentGateway {
   async exists(id: string): Promise<boolean> {
     return !!this.appointments.find((appointment) => appointment.id === id);
   }
+
+  async findOneById(id: string): Promise<AppointmentGatewayDTO | null> {
+    const appointment: AppointmentGatewayDTO | undefined = this.appointments.find(
+      (appointment) => appointment.id === id,
+    );
+
+    if (appointment === undefined) {
+      return null;
+    }
+
+    return {
+      id: appointment.id,
+      patientId: appointment.patientId,
+    };
+  }
 }
