@@ -4,6 +4,7 @@ import { Either, left, right } from '@shared/helpers/either';
 
 import { Payment } from '@domain/models/payment/payment';
 import { PaymentApproved } from '@domain/events/appointment-paid';
+import { PaymentRepository } from '@domain/models/payment/payment-repository';
 
 import { QueueAdapter } from '@application/adapters/queue-adapter';
 import { AppointmentGateway } from '@application/gateways/appointment-gateway';
@@ -19,6 +20,7 @@ export type PayAppointmentServiceOutput = void;
 export class PayAppointmentService extends Usecase<PayAppointmentServiceInput, PayAppointmentServiceOutput> {
   public constructor(
     private readonly appointmentGateway: AppointmentGateway,
+    private readonly paymentRepository: PaymentRepository,
     private readonly queueAdapter: QueueAdapter,
   ) {
     super();
@@ -43,6 +45,8 @@ export class PayAppointmentService extends Usecase<PayAppointmentServiceInput, P
     }
 
     const payment: Payment = paymentOrError.value;
+
+    await this.paymentRepository.create(payment);
     const paymentApproved = new PaymentApproved(payment.id);
     await this.queueAdapter.publish('PaymentApproved', JSON.stringify(paymentApproved));
 

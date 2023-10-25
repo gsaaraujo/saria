@@ -11,9 +11,9 @@ datasource db {
 }
 
 model Payment {
-  id            String   @id @db.Uuid
-  appointmentId String   @map("appointment_id") @db.Uuid
-  paymentToken  String   @map("payment_token")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+  id             String   @id @db.Uuid
+  appointmentId  String   @map("appointment_id") @db.Uuid
+  paymentTokenId String   @map("payment_token_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
 }

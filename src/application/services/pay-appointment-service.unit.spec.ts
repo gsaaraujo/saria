@@ -3,21 +3,24 @@ import { it, describe, beforeEach, expect } from 'vitest';
 import { Either } from '@shared/helpers/either';
 import { BaseError } from '@shared/helpers/base-error';
 
-import { FakeQueueAdapter } from '@infra/adapters/queue/fake-queue-adapter';
-import { FakeAppointmentGateway } from '@infra/gateways/appointment/fake-appointment-gateway';
-
 import { PayAppointmentService } from '@application/services/pay-appointment-service';
 import { AppointmentNotFoundError } from '@application/errors/appointment-not-found-error';
 
+import { FakeQueueAdapter } from '@infra/adapters/queue/fake-queue-adapter';
+import { FakePaymentRepository } from '@infra/repositories/fake-payment-repository';
+import { FakeAppointmentGateway } from '@infra/gateways/appointment/fake-appointment-gateway';
+
 describe('pay-appointment', () => {
   let payAppointment: PayAppointmentService;
+  let fakePaymentRepository: FakePaymentRepository;
   let fakeAppointmentGateway: FakeAppointmentGateway;
   let fakeQueueAdapter: FakeQueueAdapter;
 
   beforeEach(() => {
+    fakePaymentRepository = new FakePaymentRepository();
     fakeAppointmentGateway = new FakeAppointmentGateway();
     fakeQueueAdapter = new FakeQueueAdapter();
-    payAppointment = new PayAppointmentService(fakeAppointmentGateway, fakeQueueAdapter);
+    payAppointment = new PayAppointmentService(fakeAppointmentGateway, fakePaymentRepository, fakeQueueAdapter);
   });
 
   it(`given the customer has booked an appointment
