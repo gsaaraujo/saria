@@ -5,6 +5,7 @@
   "author": "Gabriel <gabriel.houth@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "dev": "tsx watch ./src/main/start.ts",
     "scan": "yarn tsc --noEmit && yarn eslint . && yarn vitest run"
   },
   "devDependencies": {

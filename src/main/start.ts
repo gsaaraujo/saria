@@ -4,10 +4,11 @@ import { PrismaClient } from '@prisma/client';
 
 import { PayAppointmentService } from '@application/services/pay-appointment-service';
 
+import { AxiosHttpAdapter } from '@infra/adapters/http/axios-http-adapter';
 import { RabbitMQqueueAdapter } from '@infra/adapters/queue/rabbitmq-queue-adapter';
 import { PrismaPaymentRepository } from '@infra/repositories/prisma-payment-repository';
-import { AxiosAppointmentGateway } from '@infra/gateways/appointment/axios-appointment-gateway';
-import { AxiosPaymentTokenGateway } from '@infra/gateways/payment-token/axios-payment-token-gateway';
+import { HttpAppointmentGateway } from '@infra/gateways/appointment/http-appointment-gateway';
+import { HttpPaymentTokenGateway } from '@infra/gateways/payment-token/http-payment-token-gateway';
 import { RabbitMQpayAppointmentController } from '@infra/controller/queue/rabbitmq-pay-appointment-controller';
 
 const start = async () => {
@@ -25,19 +26,21 @@ const start = async () => {
 
   const prismaPaymentRepository = new PrismaPaymentRepository(prismaClient);
 
-  const axiosAppointmentGateway = new AxiosAppointmentGateway();
-  const axiosPaymentTokenGateway = new AxiosPaymentTokenGateway();
+  const httpAdapter = new AxiosHttpAdapter();
+
+  const httpAppointmentGateway = new HttpAppointmentGateway(httpAdapter);
+  const httpPaymentTokenGateway = new HttpPaymentTokenGateway(httpAdapter);
 
   const payAppointmentService = new PayAppointmentService(
-    axiosAppointmentGateway,
+    httpAppointmentGateway,
     prismaPaymentRepository,
     rabbitMQqueueAdapter,
   );
 
   const rabbitMQpayAppointmentController = new RabbitMQpayAppointmentController(
     payAppointmentService,
-    axiosAppointmentGateway,
-    axiosPaymentTokenGateway,
+    httpAppointmentGateway,
+    httpPaymentTokenGateway,
     rabbitMQqueueAdapter,
   );
 
