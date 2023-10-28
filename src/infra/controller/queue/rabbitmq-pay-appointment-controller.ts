@@ -3,14 +3,14 @@ import { BaseError } from '@shared/helpers/base-error';
 
 import { QueueAdapter } from '@application/adapters/queue-adapter';
 import { PayAppointmentService } from '@application/services/pay-appointment-service';
+import { CardTokenGateway, CardTokenGatewayDTO } from '@application/gateways/card-token-gateway';
 import { AppointmentGateway, AppointmentGatewayDTO } from '@application/gateways/appointment-gateway';
-import { PaymentTokenGatewayDTO, PaymentTokenGateway } from '@application/gateways/payment-token-gateway';
 
 export class RabbitMQpayAppointmentController {
   public constructor(
     private readonly payAppointmentService: PayAppointmentService,
     private readonly appointmentGateway: AppointmentGateway,
-    private readonly paymentTokenGateway: PaymentTokenGateway,
+    private readonly cardTokenGateway: CardTokenGateway,
     private readonly queueAdapter: QueueAdapter,
   ) {}
 
@@ -28,17 +28,17 @@ export class RabbitMQpayAppointmentController {
         return false;
       }
 
-      const paymentToken: PaymentTokenGatewayDTO | null = await this.paymentTokenGateway.findOneByPatientId(
+      const cardToken: CardTokenGatewayDTO | null = await this.cardTokenGateway.findOneByPatientId(
         appointment.patientId,
       );
 
-      if (paymentToken === null) {
+      if (cardToken === null) {
         return false;
       }
 
       const payAppointmentService: Either<BaseError, void> = await this.payAppointmentService.execute({
         appointmentId: data.appointmentId,
-        paymentTokenId: paymentToken.id,
+        cardTokenId: cardToken.id,
       });
 
       return payAppointmentService.isRight();

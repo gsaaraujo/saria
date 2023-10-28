@@ -9,16 +9,16 @@ describe('payment', () => {
   it('should create Payment', () => {
     const output: Payment = Payment.reconstitute({
       appointmentId: 'any',
-      paymentTokenId: 'any',
+      cardTokenId: 'any',
     });
 
     const sut: Either<BaseError, Payment> = Payment.create({
       appointmentId: 'any',
-      paymentTokenId: 'any',
+      cardTokenId: 'any',
     });
 
     expect(sut.isRight()).toBeTruthy();
     expect((sut.value as Payment).appointmentId).toBe(output.appointmentId);
-    expect((sut.value as Payment).paymentTokenId).toBe(output.paymentTokenId);
+    expect((sut.value as Payment).cardTokenId).toBe(output.cardTokenId);
   });
 });

@@ -12,7 +12,7 @@ import { AppointmentNotFoundError } from '@application/errors/appointment-not-fo
 
 export type PayAppointmentServiceInput = {
   appointmentId: string;
-  paymentTokenId: string;
+  cardTokenId: string;
 };
 
 export type PayAppointmentServiceOutput = void;
@@ -36,7 +36,7 @@ export class PayAppointmentService extends Usecase<PayAppointmentServiceInput, P
 
     const paymentOrError: Either<BaseError, Payment> = Payment.create({
       appointmentId: input.appointmentId,
-      paymentTokenId: input.paymentTokenId,
+      cardTokenId: input.cardTokenId,
     });
 
     if (paymentOrError.isLeft()) {

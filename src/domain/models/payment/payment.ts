@@ -4,7 +4,7 @@ import { BaseError } from '@shared/helpers/base-error';
 
 export type PaymentProps = {
   appointmentId: string;
-  paymentTokenId: string;
+  cardTokenId: string;
 };
 
 export class Payment extends Entity<PaymentProps> {
@@ -21,7 +21,7 @@ export class Payment extends Entity<PaymentProps> {
     return this._props.appointmentId;
   }
 
-  get paymentTokenId(): string {
-    return this._props.paymentTokenId;
+  get cardTokenId(): string {
+    return this._props.cardTokenId;
   }
 }

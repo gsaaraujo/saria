@@ -30,7 +30,7 @@ describe('pay-appointment', () => {
     fakeQueueAdapter.messages = [];
     const sut: Either<BaseError, void> = await payAppointment.execute({
       appointmentId: 'b6bba160-562a-4aea-bbba-2f03bef5071a',
-      paymentTokenId: 'any',
+      cardTokenId: 'any',
     });
 
     expect(sut.isRight()).toBeTruthy();
@@ -45,7 +45,7 @@ describe('pay-appointment', () => {
 
     const sut: Either<BaseError, void> = await payAppointment.execute({
       appointmentId: 'any',
-      paymentTokenId: 'any',
+      cardTokenId: 'any',
     });
 
     expect(sut.isLeft()).toBeTruthy();

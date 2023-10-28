@@ -11,7 +11,7 @@ export class PrismaPaymentRepository implements PaymentRepository {
       data: {
         id: payment.id,
         appointmentId: payment.appointmentId,
-        paymentTokenId: payment.paymentTokenId,
+        cardTokenId: payment.cardTokenId,
       },
     });
   }
