@@ -48,7 +48,13 @@ export class PayAppointmentService extends Usecase<PayAppointmentServiceInput, P
 
     await this.paymentRepository.create(payment);
     const paymentApproved = new PaymentApproved(payment.id);
-    await this.queueAdapter.publish('PaymentApproved', JSON.stringify(paymentApproved));
+    await this.queueAdapter.publish(
+      'PaymentApproved',
+      JSON.stringify({
+        paymentId: paymentApproved.aggregateId,
+        dateTimeOccurred: paymentApproved.dateTimeOccurred,
+      }),
+    );
 
     return right(undefined);
   }
