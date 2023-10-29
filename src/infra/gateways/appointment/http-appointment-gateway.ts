@@ -15,7 +15,7 @@ export class HttpAppointmentGateway implements AppointmentGateway {
   public constructor(private readonly httpAdapter: HttpAdapter) {}
 
   async findOneById(id: string): Promise<AppointmentGatewayDTO | null> {
-    const response = await this.httpAdapter.get<Appointment | Error>(`http://xpto/appointments/${id}`);
+    const response = await this.httpAdapter.get<Appointment | Error>(`http://localhost:3000/appointments/${id}`);
 
     if ('error' in response) {
       return null;
@@ -26,8 +26,9 @@ export class HttpAppointmentGateway implements AppointmentGateway {
       patientId: response.patientId,
     };
   }
+
   async exists(id: string): Promise<boolean> {
-    const response = await this.httpAdapter.get<Appointment | Error>(`http://xpto/appointments/${id}`);
+    const response = await this.httpAdapter.get<Appointment | Error>(`http://localhost:3000/appointments/${id}/exists`);
 
     if ('error' in response) {
       return false;

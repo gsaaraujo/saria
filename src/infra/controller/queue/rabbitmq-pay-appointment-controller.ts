@@ -16,32 +16,36 @@ export class RabbitMQpayAppointmentController {
 
   public async handle(): Promise<void> {
     await this.queueAdapter.subscribe('AppointmentBooked', async (rawData: string) => {
-      const data = JSON.parse(rawData);
+      try {
+        const data = JSON.parse(rawData);
 
-      if (data.appointmentId === undefined) {
+        if (data.appointmentId === undefined) {
+          return false;
+        }
+
+        const appointment: AppointmentGatewayDTO | null = await this.appointmentGateway.findOneById(data.appointmentId);
+
+        if (appointment === null) {
+          return false;
+        }
+
+        const cardToken: CardTokenGatewayDTO | null = await this.cardTokenGateway.findOneByPatientId(
+          appointment.patientId,
+        );
+
+        if (cardToken === null) {
+          return false;
+        }
+
+        const payAppointmentService: Either<BaseError, void> = await this.payAppointmentService.execute({
+          appointmentId: data.appointmentId,
+          cardTokenId: cardToken.id,
+        });
+
+        return payAppointmentService.isRight();
+      } catch (error) {
         return false;
       }
-
-      const appointment: AppointmentGatewayDTO | null = await this.appointmentGateway.findOneById(data.appointmentId);
-
-      if (appointment === null) {
-        return false;
-      }
-
-      const cardToken: CardTokenGatewayDTO | null = await this.cardTokenGateway.findOneByPatientId(
-        appointment.patientId,
-      );
-
-      if (cardToken === null) {
-        return false;
-      }
-
-      const payAppointmentService: Either<BaseError, void> = await this.payAppointmentService.execute({
-        appointmentId: data.appointmentId,
-        cardTokenId: cardToken.id,
-      });
-
-      return payAppointmentService.isRight();
     });
   }
 }
