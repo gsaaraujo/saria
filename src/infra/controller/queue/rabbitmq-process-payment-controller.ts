@@ -2,13 +2,13 @@ import { Either } from '@shared/helpers/either';
 import { BaseError } from '@shared/helpers/base-error';
 
 import { QueueAdapter } from '@application/adapters/queue-adapter';
-import { PayAppointmentService } from '@application/services/pay-appointment-service';
+import { ProcessPaymentService } from '@application/services/process-payment-service';
 import { CardTokenGateway, CardTokenGatewayDTO } from '@application/gateways/card-token-gateway';
 import { AppointmentGateway, AppointmentGatewayDTO } from '@application/gateways/appointment-gateway';
 
-export class RabbitMQpayAppointmentController {
+export class RabbitMQprocessPaymentController {
   public constructor(
-    private readonly payAppointmentService: PayAppointmentService,
+    private readonly processPaymentService: ProcessPaymentService,
     private readonly appointmentGateway: AppointmentGateway,
     private readonly cardTokenGateway: CardTokenGateway,
     private readonly queueAdapter: QueueAdapter,
@@ -37,12 +37,12 @@ export class RabbitMQpayAppointmentController {
           return false;
         }
 
-        const payAppointmentService: Either<BaseError, void> = await this.payAppointmentService.execute({
+        const processPaymentService: Either<BaseError, void> = await this.processPaymentService.execute({
           appointmentId: data.appointmentId,
           cardTokenId: cardToken.id,
         });
 
-        return payAppointmentService.isRight();
+        return processPaymentService.isRight();
       } catch (error) {
         return false;
       }

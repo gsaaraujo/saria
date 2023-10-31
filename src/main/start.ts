@@ -3,7 +3,7 @@ import express, { Router, Request, Response } from 'express';
 
 import { PrismaClient } from '@prisma/client';
 
-import { PayAppointmentService } from '@application/services/pay-appointment-service';
+import { ProcessPaymentService } from '@application/services/process-payment-service';
 import { GetOnePaymentByIdService } from '@application/services/get-one-payment-by-id-service';
 
 import { AxiosHttpAdapter } from '@infra/adapters/http/axios-http-adapter';
@@ -12,7 +12,7 @@ import { PrismaPaymentGateway } from '@infra/gateways/payment/prisma-payment-gat
 import { PrismaPaymentRepository } from '@infra/repositories/prisma-payment-repository';
 import { HttpAppointmentGateway } from '@infra/gateways/appointment/http-appointment-gateway';
 import { PrismaPaymentTokenGateway } from '@infra/gateways/payment-token/prisma-card-token-gateway';
-import { RabbitMQpayAppointmentController } from '@infra/controller/queue/rabbitmq-pay-appointment-controller';
+import { RabbitMQprocessPaymentController } from '@infra/controller/queue/rabbitmq-process-payment-controller';
 import { ExpressGetOnePaymentByIdController } from '@infra/controller/rest/express-get-one-payment-by-id-controller';
 
 const start = async () => {
@@ -36,15 +36,15 @@ const start = async () => {
   const prismaPaymentTokenGateway = new PrismaPaymentTokenGateway(prismaClient);
 
   const getOnePaymentByIdService = new GetOnePaymentByIdService(prismaPaymentGateway);
-  const payAppointmentService = new PayAppointmentService(
+  const processPaymentService = new ProcessPaymentService(
     httpAppointmentGateway,
     prismaPaymentRepository,
     rabbitMQqueueAdapter,
   );
 
   const expressGetOnePaymentByIdController = new ExpressGetOnePaymentByIdController(getOnePaymentByIdService);
-  const rabbitMQpayAppointmentController = new RabbitMQpayAppointmentController(
-    payAppointmentService,
+  const rabbitMQpayAppointmentController = new RabbitMQprocessPaymentController(
+    processPaymentService,
     httpAppointmentGateway,
     prismaPaymentTokenGateway,
     rabbitMQqueueAdapter,

@@ -1,3 +1,3 @@
 import { DomainEvent } from '@shared/helpers/domain-event';
 
-export class PaymentApproved extends DomainEvent {}
+export class PaymentProcessed extends DomainEvent {}

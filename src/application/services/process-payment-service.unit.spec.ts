@@ -3,15 +3,15 @@ import { it, describe, beforeEach, expect } from 'vitest';
 import { Either } from '@shared/helpers/either';
 import { BaseError } from '@shared/helpers/base-error';
 
-import { PayAppointmentService } from '@application/services/pay-appointment-service';
+import { ProcessPaymentService } from '@application/services/process-payment-service';
 import { AppointmentNotFoundError } from '@application/errors/appointment-not-found-error';
 
 import { FakeQueueAdapter } from '@infra/adapters/queue/fake-queue-adapter';
 import { FakePaymentRepository } from '@infra/repositories/fake-payment-repository';
 import { FakeAppointmentGateway } from '@infra/gateways/appointment/fake-appointment-gateway';
 
-describe('pay-appointment', () => {
-  let payAppointment: PayAppointmentService;
+describe('process-payment', () => {
+  let processPayment: ProcessPaymentService;
   let fakePaymentRepository: FakePaymentRepository;
   let fakeAppointmentGateway: FakeAppointmentGateway;
   let fakeQueueAdapter: FakeQueueAdapter;
@@ -20,7 +20,7 @@ describe('pay-appointment', () => {
     fakePaymentRepository = new FakePaymentRepository();
     fakeAppointmentGateway = new FakeAppointmentGateway();
     fakeQueueAdapter = new FakeQueueAdapter();
-    payAppointment = new PayAppointmentService(fakeAppointmentGateway, fakePaymentRepository, fakeQueueAdapter);
+    processPayment = new ProcessPaymentService(fakeAppointmentGateway, fakePaymentRepository, fakeQueueAdapter);
   });
 
   it(`given the customer has booked an appointment
@@ -28,7 +28,7 @@ describe('pay-appointment', () => {
       it should succeed`, async () => {
     fakeAppointmentGateway.appointments = [{ id: 'b6bba160-562a-4aea-bbba-2f03bef5071a', patientId: 'any' }];
     fakeQueueAdapter.messages = [];
-    const sut: Either<BaseError, void> = await payAppointment.execute({
+    const sut: Either<BaseError, void> = await processPayment.execute({
       appointmentId: 'b6bba160-562a-4aea-bbba-2f03bef5071a',
       cardTokenId: 'any',
     });
@@ -43,7 +43,7 @@ describe('pay-appointment', () => {
     fakeAppointmentGateway.appointments = [];
     const error: BaseError = new AppointmentNotFoundError('Appointment not found.');
 
-    const sut: Either<BaseError, void> = await payAppointment.execute({
+    const sut: Either<BaseError, void> = await processPayment.execute({
       appointmentId: 'any',
       cardTokenId: 'any',
     });

@@ -3,21 +3,21 @@ import { BaseError } from '@shared/helpers/base-error';
 import { Either, left, right } from '@shared/helpers/either';
 
 import { Payment } from '@domain/models/payment/payment';
-import { PaymentApproved } from '@domain/events/appointment-paid';
+import { PaymentProcessed } from '@domain/events/payment-processed';
 import { PaymentRepository } from '@domain/models/payment/payment-repository';
 
 import { QueueAdapter } from '@application/adapters/queue-adapter';
 import { AppointmentGateway } from '@application/gateways/appointment-gateway';
 import { AppointmentNotFoundError } from '@application/errors/appointment-not-found-error';
 
-export type PayAppointmentServiceInput = {
+export type ProcessPaymentServiceInput = {
   appointmentId: string;
   cardTokenId: string;
 };
 
-export type PayAppointmentServiceOutput = void;
+export type ProcessPaymentServiceOutput = void;
 
-export class PayAppointmentService extends Usecase<PayAppointmentServiceInput, PayAppointmentServiceOutput> {
+export class ProcessPaymentService extends Usecase<ProcessPaymentServiceInput, ProcessPaymentServiceOutput> {
   public constructor(
     private readonly appointmentGateway: AppointmentGateway,
     private readonly paymentRepository: PaymentRepository,
@@ -26,7 +26,7 @@ export class PayAppointmentService extends Usecase<PayAppointmentServiceInput, P
     super();
   }
 
-  public async execute(input: PayAppointmentServiceInput): Promise<Either<BaseError, void>> {
+  public async execute(input: ProcessPaymentServiceInput): Promise<Either<BaseError, void>> {
     const appointmentExists: boolean = await this.appointmentGateway.exists(input.appointmentId);
 
     if (!appointmentExists) {
@@ -47,12 +47,12 @@ export class PayAppointmentService extends Usecase<PayAppointmentServiceInput, P
     const payment: Payment = paymentOrError.value;
 
     await this.paymentRepository.create(payment);
-    const paymentApproved = new PaymentApproved(payment.id);
+    const paymentProcessed = new PaymentProcessed(payment.id);
     await this.queueAdapter.publish(
-      'PaymentApproved',
+      'PaymentProcessed',
       JSON.stringify({
-        paymentId: paymentApproved.aggregateId,
-        dateTimeOccurred: paymentApproved.dateTimeOccurred,
+        paymentId: paymentProcessed.aggregateId,
+        dateTimeOccurred: paymentProcessed.dateTimeOccurred,
       }),
     );
 
